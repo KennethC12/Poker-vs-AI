@@ -11,26 +11,42 @@ HAND_RANKINGS = {
     "Full House": 7,
     "Four of a Kind": 8,
     "Straight Flush": 9,
-    "Royal Flush": 10
+    "Royal Flush": 10,
 }
+
 
 def evaluate_hand(hand):
     rank_map = {
-        '02': 2, '03': 3, '04': 4, '05': 5, '06': 6, '07': 7, '08': 8, '09': 9, 
-        '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14
+        "02": 2,
+        "03": 3,
+        "04": 4,
+        "05": 5,
+        "06": 6,
+        "07": 7,
+        "08": 8,
+        "09": 9,
+        "10": 10,
+        "J": 11,
+        "Q": 12,
+        "K": 13,
+        "A": 14,
     }
 
     # Extract ranks and suits from the string-based cards (e.g., '2H', 'AS')
-    ranks = [rank_map[card[:-1]] for card in hand]  # Rank is everything except the last character
+    ranks = [
+        rank_map[card[:-1]] for card in hand
+    ]  # Rank is everything except the last character
     suits = [card[-1] for card in hand]  # Suit is the last character
 
     sorted_ranks = sorted(ranks)
-    
+
     # Handle low-Ace straight (A, 2, 3, 4, 5)
-    if sorted_ranks == [2, 3, 4, 5, 14]:  
+    if sorted_ranks == [2, 3, 4, 5, 14]:
         sorted_ranks = [1, 2, 3, 4, 5]  # Treat Ace as 1 for this straight
-    
-    is_straight = all(sorted_ranks[i] + 1 == sorted_ranks[i + 1] for i in range(len(sorted_ranks) - 1))
+
+    is_straight = all(
+        sorted_ranks[i] + 1 == sorted_ranks[i + 1] for i in range(len(sorted_ranks) - 1)
+    )
     rank_counts = Counter(ranks)
     is_flush = len(set(suits)) == 1
 
@@ -51,6 +67,7 @@ def evaluate_hand(hand):
     if 2 in rank_counts.values():
         return (HAND_RANKINGS["One Pair"], max(rank_counts, key=rank_counts.get))
     return (HAND_RANKINGS["High Card"], sorted_ranks[-1])
+
 
 def compare_hands(hand1, hand2):
     rank1, high_card1 = evaluate_hand(hand1)
@@ -74,6 +91,7 @@ def compare_hands(hand1, hand2):
                 if card1 != card2:
                     return 1 if card1 > card2 else -1
             return 0  # Hands are identical
+
 
 def determine_winner(players, community_cards):
     best_hand = None

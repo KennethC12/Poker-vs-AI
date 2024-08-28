@@ -1,11 +1,10 @@
-
 class Player:
     def __init__(self, name, chips):
         self.name = name
         self.chips = chips
         self.current_bet = 0
         self.has_folded = False
-        self.has_acted = False 
+        self.has_acted = False
 
     def bet(self, amount):
         if amount > self.chips:
@@ -15,7 +14,9 @@ class Player:
     def check(self, current_game_bet):
         """Allow the player to check only if their bet matches the current game's bet."""
         if self.current_bet != current_game_bet:
-            raise ValueError(f"{self.name} cannot check when their current bet is less than the game's current bet.")
+            raise ValueError(
+                f"{self.name} cannot check when their current bet is less than the game's current bet."
+            )
         # No further action is needed for a check
 
     def fold(self):
@@ -26,7 +27,7 @@ class Player:
         # Reset bet and folded status at the start of a new round.
         self.current_bet = 0
         self.has_folded = False
-        self.has_acted = False 
+        self.has_acted = False
 
     def is_all_in(self):
         # Returns True if the player has gone all in.
