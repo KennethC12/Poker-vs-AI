@@ -12,14 +12,12 @@ pygame.font.init()
 
 clock = pygame.time.Clock()
 
-
+# Initialize the chat log
 chat_font = pygame.font.Font(None, 20)
 chat_log = ChatLog(chat_font, max_messages=10)
 
-# Now, you can use `chat_log` in other modules
 
-
-WIDTH, HEIGHT = 1000, 800
+WIDTH, HEIGHT = 1000, 800  # Set the initial window size
 WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Poker by Kenneth Chen")
 
@@ -27,22 +25,23 @@ pygame.display.set_caption("Poker by Kenneth Chen")
 BACKGROUND_ORIG = pygame.image.load("images/poker-table.png").convert_alpha()
 
 
+# Function to scale the background image
 def scale_background():
-    return pygame.transform.scale(
-        BACKGROUND_ORIG, (WIDTH, HEIGHT)
-    )  # Scale based on new window dimensions
+    return pygame.transform.scale(BACKGROUND_ORIG, (WIDTH, HEIGHT))
 
 
 # Initial scaling of the background image
 BACKGROUND = scale_background()
 
 
+# Function to draw the background
 def draw_bg():
     WIN.blit(BACKGROUND, (0, 0))
 
 
+# Function that allow the resize of the window
 def resize_window(width, height):
-    global WIN, WIDTH, HEIGHT, BACKGROUND
+    global WIN, WIDTH, HEIGHT, BACKGROUND  # Update global variables
     WIDTH, HEIGHT = width, height
     WIN = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     BACKGROUND = scale_background()  # Rescale background
@@ -54,6 +53,7 @@ def resize_window(width, height):
     bet_text_box.update_position(WIDTH, HEIGHT)
 
 
+# Function to load card images
 def load_card_images():
     card_images = {}
     suits = ["hearts", "diamonds", "clubs", "spades"]
@@ -96,9 +96,11 @@ def load_card_images():
     return card_images
 
 
+# Load card images
 card_images = load_card_images()
 
 
+# Button class
 class Button:
     def __init__(self, text, x, y, width, height, color, hover_color, action=None):
         self.text = text
@@ -107,7 +109,7 @@ class Button:
         self.hover_color = hover_color
         self.action = action
 
-    def draw(self, screen, font):
+    def draw(self, screen, font):  # Creating the buttons
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             pygame.draw.rect(screen, self.hover_color, self.rect)
@@ -118,15 +120,18 @@ class Button:
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
-    def is_clicked(self, event):
+    def is_clicked(self, event):  # Function to check if the button is clicked
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            if self.rect.collidepoint(event.pos):
+            if self.rect.collidepoint(
+                event.pos
+            ):  # If the mouse is clicked on the button
                 if self.action:
-                    self.action()
+                    self.action()  # Call the action function
                 return True
         return False
 
 
+# Class for the text box
 class TextBox:
     def __init__(self, x_percent, y_percent, w_percent, h_percent, font):
         # Store position and size as percentages
@@ -141,6 +146,7 @@ class TextBox:
         self.txt_surface = font.render(self.text, True, self.color)
         self.active = False
 
+    # Update the TextBox position and size based on window dimensions
     def update_position(self, width, height):
         """Update the TextBox position and size based on window dimensions."""
         self.rect = pygame.Rect(
@@ -150,6 +156,7 @@ class TextBox:
             int(self.h_percent * height),
         )
 
+    # Handle events that happens in-game
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -177,11 +184,12 @@ class TextBox:
 
 # Main loop
 running = True
-
+# Initialize Pygame
 clock = pygame.time.Clock()
 FPS = 60
 
 
+# Draw the pot
 def draw_pot(screen, pot, font):
     """Displays the total pot amount on the screen."""
     pot_text = font.render(
@@ -193,6 +201,7 @@ def draw_pot(screen, pot, font):
     screen.blit(pot_text, pot_rect)
 
 
+# Draw the cards
 def draw_cards(screen, cards, stage):
     card_width = 70
     card_height = 100
@@ -232,7 +241,7 @@ def draw_cards(screen, cards, stage):
     for i, card in enumerate(cards[:cards_to_display]):
         rank = rank_map.get(card[:-1], card[:-1])  # Extract rank from the card string
         suit = suit_map.get(card[-1], card[-1])  # Extract suit from the card string
-        card_key = (rank, suit)
+        card_key = (rank, suit)  # Create a tuple with rank and suit
 
         if card_key in card_images:
             card_image = card_images[card_key]
@@ -254,6 +263,7 @@ bet_text_box = TextBox(0.63125, 0.8333, 0.175, 0.0533, font)
 # Define button actions
 
 
+# Define Fold button actions
 def fold_action(chat_log):
     current_player = game_state.players[game_state.current_player_index]
     try:
@@ -264,6 +274,7 @@ def fold_action(chat_log):
         chat_log.add_message(f"Error: {str(e)}")
 
 
+# Define Call button actions
 def call_action(chat_log):
     current_player = game_state.players[game_state.current_player_index]
     try:
@@ -285,6 +296,7 @@ def call_action(chat_log):
         chat_log.add_message(f"Error: {str(e)}")
 
 
+# Define Bet Any Amount button actions
 def bet_any_amount_action(chat_log):
     current_player = game_state.players[game_state.current_player_index]
     try:
@@ -300,6 +312,7 @@ def bet_any_amount_action(chat_log):
         chat_log.add_message(f"Error: {str(e)}")
 
 
+# Define Check button actions
 def check_action(chat_log):
     """Handles the check action and advances the stage if all players have checked."""
     current_player = game_state.players[game_state.current_player_index]
@@ -317,6 +330,7 @@ def check_action(chat_log):
         chat_log.add_message(f"Error: {str(e)}")
 
 
+# Display player cards
 def display_cards(screen, players):
     """Displays player cards on the screen."""
     rank_map = {
@@ -372,17 +386,17 @@ def display_cards(screen, players):
                 if len(card) < 2:
                     print(f"Error: Unexpected card format: {card}")
                     continue
-
+                # Extract rank and suit
                 rank = rank_map.get(card[:-1])
                 if rank is None:
                     print(f"Error: Rank '{card[:-1]}' not found in rank_map.")
                     continue
-
+                # Extract suit
                 suit = suit_map.get(card[-1])
                 if suit is None:
                     print(f"Error: Suit '{card[-1]}' not found in suit_map.")
                     continue
-
+                # Load the card image
                 card_filename = f"{rank}_of_{suit}.png"
                 card_path = os.path.join("cards", card_filename)
                 if not os.path.isfile(card_path):
@@ -397,6 +411,7 @@ def display_cards(screen, players):
             )
 
 
+# Display player chip counts
 def display_chip_count(screen, players, player_positions):
     """
     Displays player chip counts on the screen, positioned based on player_positions.
@@ -417,6 +432,7 @@ def display_chip_count(screen, players, player_positions):
         screen.blit(chip_text, (chip_x, chip_y))
 
 
+# Function to display the game state
 def draw_game_state(screen, players):
     # Define player chip positions
     player_positions = [
@@ -437,7 +453,8 @@ def distribute_pot_to_winner(winner):
     game_state.pot = 0
 
 
-def simulate_game_utility(bot, game_state):
+# Function to simulate the outcome of the game
+def simulate_game_utility(bot):
     # Example of calculating utility based on chips won/lost
     initial_chips = bot.chips
     current_chips = (

@@ -4,7 +4,7 @@ from evaluator import *
 import pygame
 import random
 
-
+# Initialize the stage names
 PRE_FLOP = "pre-flop"
 FLOP = "flop"
 TURN = "turn"
